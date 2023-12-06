@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column,Integer,String,func
+from sqlalchemy import Column,Integer,String,func, Boolean
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy import create_engine 
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,6 +25,15 @@ class Pet(Base):
     age = Column(Integer, nullable=False)
     type_pet = Column(String, nullable=False)
     created_at = Column(DateTime, nullable= True)
+
+class Users(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(length=30), nullable= False)
+    lastname = Column(String(length=30), nullable= False)
+    phone_number = Column(Integer,nullable=True)
+    is_active = Column(Boolean, default=False)
+    password = Column(String(length=50), nullable=False)
 
 
 
