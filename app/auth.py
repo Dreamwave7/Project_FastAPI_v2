@@ -21,4 +21,21 @@ async def verify_password(ordinary_password:str,hashed_password:str):
     return result
 
 async def get_user(db:Session, username:str):
-    pass
+    query = db.query(Users).where(Users.name == username).first()
+    result = db.execute(query)
+    if result:
+        return result
+    return None
+
+async def authenticate_user(db:Session, username:str, password:str):
+    user = await get_user(db, username)
+    user: Users
+    if not user:
+        return False
+    if not verify_password(password, user.password):
+        return False
+    
+    return user
+
+
+

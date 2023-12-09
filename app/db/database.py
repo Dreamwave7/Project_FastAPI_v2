@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column,Integer,String,func, Boolean
+from sqlalchemy import Column,Integer,String,func, Boolean, ForeignKey
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy import create_engine 
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,6 +21,7 @@ class Pet(Base):
     __tablename__ = "pets"
     id = Column(Integer, primary_key=True, nullable=False)
     owner_name = Column(String(length=25), nullable= False)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     name = Column(String(length=20), nullable=False)
     age = Column(Integer, nullable=False)
     type_pet = Column(String, nullable=False)
