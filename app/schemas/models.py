@@ -20,13 +20,19 @@ class PetUpdate(OrmBaseModel):
     type_pet:str
 
 
-class Users(OrmBaseModel):
+class UsersResponse(OrmBaseModel):
     name: str
     lastname: str
     phone_number: int
 
-class UserInDB(Users):
+class UserInDB(UsersResponse):
     password:str
 
 class TokenResponse(BaseModel):
     access_token: str
+
+class UserSignup(OrmBaseModel):
+    name: str
+    lastname: str
+    password: str
+    # phone_number: int|None
