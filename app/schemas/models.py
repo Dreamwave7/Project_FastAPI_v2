@@ -10,7 +10,7 @@ class PetModel(OrmBaseModel):
     name: str
     type_pet: str
     age: int
-    owner_name: str 
+    # owner_name: str 
     # created_at: datetime|None = Field(default=datetime.utcnow())
 
 class PetUpdate(OrmBaseModel):
@@ -23,7 +23,8 @@ class PetUpdate(OrmBaseModel):
 class UsersResponse(OrmBaseModel):
     name: str
     lastname: str
-    phone_number: int
+    phone_number: int|None
+
 
 class UserInDB(UsersResponse):
     password:str
@@ -34,5 +35,14 @@ class TokenResponse(BaseModel):
 class UserSignup(OrmBaseModel):
     name: str
     lastname: str
-    password: str
+    password: str = Field(min_length=10)
     # phone_number: int|None
+
+class UserSuccesReg(BaseModel):
+    successful : UserSignup
+
+class UserLogin(OrmBaseModel):
+    login: UsersResponse
+
+class TokenResponse(BaseModel):
+    token: str

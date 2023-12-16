@@ -8,22 +8,26 @@ from fastapi import HTTPException, status
 
 
 
-async def get_all_pets(db:Session):
-    result = db.query(Pet).all()
+async def get_all_pets(db:Session, user:UserInDB):
+    result = db.query(Pet).where(Pet.owner_id == user.id).all()
     return result
 
-async def get_pet_from_id(db:Session, pet_id:int):
-    result = db.query(Pet).where(Pet.id == pet_id).first()
+async def get_pet_from_id(db:Session, pet_id:int, user: UserInDB):
+    result = db.query(Pet).where(Pet.owner_id == user.id).where(Pet.id == pet_id).first()
     if result:
         return result
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="This id doesnt exist")
 
-async def create_pet_from_data(db:Session, data:PetModel):
-    new_pet = Pet(**data.model_dump(), created_at = datetime.utcnow().date())
+async def create_pet_from_data(db:Session, data:PetModel, user:UserInDB):
+    new_pet = Pet(**data.model_dump(),
+                  created_at = datetime.utcnow().date(),
+                  owner_id = user.id,
+                  owner_name = user.name)
     db.add(new_pet)
     db.commit()
     db.refresh(new_pet)
     return new_pet
+
 
 
 async def update_pet_from_data(db:Session, data:PetUpdate):

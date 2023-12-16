@@ -14,14 +14,13 @@ oauth = OAuth2PasswordBearer(tokenUrl="login")
 SECRET_KEY = "9d25e094faa6c9d25e094faa6ca2556c818166b7a9563a2556c818166b7a9563"
 ALGM = "HS256"
 
-bcrypt = CryptContext(schemes=["bcrypt"])
+bcrypt = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 
 async def hash_password(password:str):
-    hashed_password = bcrypt.hash(password)
-    return hash_password
+    return bcrypt.hash(password)
 
 
-async def verify_password(ordinary_password:str,hashed_password:str):
+def verify_password(ordinary_password:str,hashed_password:str):
     result = bcrypt.verify(ordinary_password, hashed_password)
     return result
 
@@ -32,13 +31,14 @@ def get_user(db:Session, username:str):
         return query
     return None
 
-async def authenticate_user(db:Session, username:str, password:str):
-    user = await get_user(db, username)
+def authenticate_user(db:Session, username:str, password:str):
+    excption = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cant validate user")
+    user = get_user(db, username)
     user: Users
     if not user:
-        return False
-    if not verify_password(password, user.password):
-        return False
+        raise excption
+    if not  verify_password(password, user.password):
+        raise excption
     
     return user
 
@@ -64,12 +64,11 @@ async def get_current_user(token:Annotated[str,Depends(oauth)], db:Session = Dep
     return user
 
 async def signup_user(data:UserSignup, db: Annotated[Session, Depends(get_db)]):
-    new_user = Users(**data.model_dump())
+    encoded_password = await hash_password(data.password)
+    new_user = Users(**data.model_dump(exclude="password"),password = encoded_password)
     db.add(new_user)
-    db.refresh(new_user)
     db.commit()
     return new_user
-
     
 
     

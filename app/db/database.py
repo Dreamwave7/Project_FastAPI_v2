@@ -34,7 +34,8 @@ class Users(Base):
     lastname = Column(String(length=30), nullable= False)
     phone_number = Column(Integer,nullable=True)
     is_active = Column(Boolean, default=False)
-    password = Column(String(length=50), nullable=False)
+    password = Column(String(length=500), nullable=False)
+    test = Column(String, nullable=True)
 
 
 
