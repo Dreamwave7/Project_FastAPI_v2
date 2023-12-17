@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from db.database import Pet
 from schemas.models import *
 from datetime import datetime
-from sqlalchemy import update, values
+from sqlalchemy import and_, update, values
 from fastapi import HTTPException, status
 
 
@@ -30,34 +30,34 @@ async def create_pet_from_data(db:Session, data:PetModel, user:UserInDB):
 
 
 
-async def update_pet_from_data(db:Session, data:PetUpdate):
-    query = update(Pet).where(Pet.id == data.id).values(data.model_dump())
+async def update_pet_from_data(db:Session, data:PetUpdate, user:UserInDB):
+    # query = update(Pet).where(Pet.id == data.id).values(data.model_dump())
+    query = update(Pet).where(and_(Pet.id == data.id, Pet.owner_id == user.id)).values(data.model_dump())
     updated_pet = db.execute(query)
-    # current_pet = db.query(Pet).where(Pet.id == data.id).first()
     db.commit()
-    # db.refresh(current_pet)
 
-    return query
+    return updated_pet
 
-async def delete_pet_from_id(db:Session, id_pet: int):
-    query = db.query(Pet).where(Pet.id == id_pet).first()
+async def delete_pet_from_id(db:Session, id_pet: int, user:UserInDB):
+    query = db.query(Pet).where(and_(Pet.id == id_pet, Pet.owner_id == user.id)).first()
     if query:
         removing = db.delete(query)
         db.commit()
-        return {"pet was deleted": id_pet}
+        return {"Success": f"Pet with id {id_pet} was deleted"}
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pet doesnt exist")
     
 
 
-async def get_all_cats(db:Session):
-    query = db.query(Pet).where(Pet.type_pet.in_(["Cat","cat","CAT"])).all()
+async def get_all_cats(db:Session, user:UserInDB):
+    # query = db.query(Pet).where(and_(Pet.type_pet.in_(["Cat","cat","CAT"], Pet.owner_id == user.id))).all()
+    query = db.query(Pet).filter(Pet.type_pet.in_(["Cat","cat","CAT"])).where(Pet.owner_id == user.id).all()
     if query:
         return query
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Doesnt exist any cat")
 
-async def get_all_dogs(db:Session):
-    query = db.query(Pet).where(Pet.type_pet.in_(["Dog","DOG","dog"])).all()
+async def get_all_dogs(db:Session, user:UserInDB):
+    query = db.query(Pet).filter(Pet.type_pet.in_(["DOG","Dog","dog"])).where(Pet.owner_id == user.id).all()
     if query:
         return query
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Doesnt exist any dog")

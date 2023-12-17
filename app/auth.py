@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from schemas.models import *
 
-oauth = OAuth2PasswordBearer(tokenUrl="login")
+oauth = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 SECRET_KEY = "9d25e094faa6c9d25e094faa6ca2556c818166b7a9563a2556c818166b7a9563"
@@ -44,7 +44,7 @@ def authenticate_user(db:Session, username:str, password:str):
 
 async def create_access_token(data:dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=30)
+    expire = datetime.utcnow() + timedelta(minutes=3000)
     to_encode.update({"exp" : expire})
     encoded_token = jwt.encode(to_encode, SECRET_KEY, ALGM)
     return encoded_token

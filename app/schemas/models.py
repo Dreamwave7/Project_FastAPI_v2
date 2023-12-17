@@ -7,17 +7,17 @@ class OrmBaseModel(BaseModel):
         from_attributes = True
 
 class PetModel(OrmBaseModel):
-    name: str
-    type_pet: str
-    age: int
+    name: str = Field(min_length=3)
+    type_pet: str = Field(min_length=3)
+    age: int = Field(ge=1)
     # owner_name: str 
     # created_at: datetime|None = Field(default=datetime.utcnow())
 
 class PetUpdate(OrmBaseModel):
     id : int
-    name:str
-    age:int
-    type_pet:str
+    name:str = Field(min_length=3)
+    age:int = Field(ge= 1)
+    type_pet:str = Field(min_length=3)
 
 
 class UsersResponse(OrmBaseModel):

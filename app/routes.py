@@ -25,22 +25,22 @@ async def create_pet(data: PetModel, db:Annotated[Session,Depends(get_db)], user
     return new_pet
 
 @router.patch("/edit_pet")
-async def edit_pet(data:PetUpdate, db:Annotated[Session, Depends(get_db)], ):
-    update_pet = await update_pet_from_data(db, data)
-    return update
+async def edit_pet(data:PetUpdate, db:Annotated[Session, Depends(get_db)], user = Depends(auth.get_current_user)):
+    update_pet = await update_pet_from_data(db, data, user)
+    return update_pet
 
 
 @router.delete("/delete_pet/{id}")
-async def delete_pet(id:int, db:Annotated[Session, Depends(get_db)]):
-    removing = await delete_pet_from_id(db, id)
+async def delete_pet(id:int, db:Annotated[Session, Depends(get_db)], user = Depends(auth.get_current_user)):
+    removing = await delete_pet_from_id(db, id, user)
     return removing
 
-@router.get("/all_cats",response_model=List[PetResponse])
-async def get_cats(db:Annotated[Session, Depends(get_db)]):
-    cats = await get_all_cats(db)
+@router.get("/all_cats", response_model=List[PetResponse])
+async def get_cats(db:Annotated[Session, Depends(get_db)], user = Depends(auth.get_current_user)):
+    cats = await get_all_cats(db,user)
     return cats
 
 @router.get("/all_dogs", response_model=List[PetResponse])
-async def get_dogs(db:Annotated[Session, Depends(get_db)]):
-    dogs = await get_all_dogs(db)
+async def get_dogs(db:Annotated[Session, Depends(get_db)], user = Depends(auth.get_current_user)):
+    dogs = await get_all_dogs(db,user)
     return dogs
