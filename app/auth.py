@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from db.database import *
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from schemas.models import *
+from schemas import models
 
 oauth = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -63,7 +63,7 @@ async def get_current_user(token:Annotated[str,Depends(oauth)], db:Session = Dep
     
     return user
 
-async def signup_user(data:UserSignup, db: Annotated[Session, Depends(get_db)]):
+async def signup_user(data:models.UserSignup, db: Annotated[Session, Depends(get_db)]):
     encoded_password = await hash_password(data.password)
     new_user = Users(**data.model_dump(exclude="password"),password = encoded_password)
     db.add(new_user)

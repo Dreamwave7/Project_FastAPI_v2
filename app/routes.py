@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.database import get_db, Pet
 from schemas.responses import *
-from schemas.models import *
+from schemas import models
 from queries import *
 import auth
 router = APIRouter(prefix="/pet",tags=["animals"])
